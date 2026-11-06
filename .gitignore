@@ -1,0 +1,11 @@
+# Lab3 tài liệu không đưa lên GitHub
+Lab3_25560070_HuynhVuQuocHuy_homework.docx
+Lab3_25560070_HuynhVuQuocHuy_inclass.docx
+Lab3.pdf
+
+# Dependencies, logs và biến môi trường
+node_modules/
+npm-debug.log*
+server.log
+.env
+.DS_Store

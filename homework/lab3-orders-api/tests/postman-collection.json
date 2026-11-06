@@ -1,0 +1,121 @@
+{
+  "info": {
+    "name": "Lab 3 Homework - Orders & Inventory API",
+    "_postman_id": "ecommerce-order-db-lab3-homework",
+    "description": "Requests for every required endpoint, including success and error cases. Set baseUrl and run init-db + seed first.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "api", "value": "{{baseUrl}}/api/v1" },
+    { "key": "orderId", "value": "1" },
+    { "key": "customerId", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "Health",
+      "request": { "method": "GET", "header": [], "url": "{{baseUrl}}/health" }
+    },
+    {
+      "name": "Orders",
+      "item": [
+        {
+          "name": "Create order - 201",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"customerId\": 1,\n  \"items\": [{\"productId\": 1, \"quantity\": 1}, {\"productId\": 2, \"quantity\": 2}]\n}" },
+            "url": "{{api}}/orders"
+          }
+        },
+        {
+          "name": "Create order - empty items 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"customerId\": 1, \"items\": []}" },
+            "url": "{{api}}/orders"
+          }
+        },
+        {
+          "name": "Create order - quantity zero 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"customerId\": 1, \"items\": [{\"productId\": 1, \"quantity\": 0}]}" },
+            "url": "{{api}}/orders"
+          }
+        },
+        {
+          "name": "Create order - unknown customer 404",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"customerId\": 9999, \"items\": [{\"productId\": 1, \"quantity\": 1}]}" },
+            "url": "{{api}}/orders"
+          }
+        },
+        {
+          "name": "Create order - out of stock 400",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"customerId\": 1, \"items\": [{\"productId\": 5, \"quantity\": 1}]}" },
+            "url": "{{api}}/orders"
+          }
+        },
+        {
+          "name": "List orders - filter and pagination",
+          "request": { "method": "GET", "header": [], "url": "{{api}}/orders?status=pending&customerId=1&page=1&limit=5" }
+        },
+        {
+          "name": "Order details - nested JSON",
+          "request": { "method": "GET", "header": [], "url": "{{api}}/orders/{{orderId}}" }
+        },
+        {
+          "name": "Order details - invalid id 400",
+          "request": { "method": "GET", "header": [], "url": "{{api}}/orders/not-a-number" }
+        },
+        {
+          "name": "Update status - cancelled and restore stock",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"status\": \"cancelled\"}" },
+            "url": "{{api}}/orders/{{orderId}}/status"
+          }
+        },
+        {
+          "name": "Update status - invalid enum 400",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\"status\": \"shipped\"}" },
+            "url": "{{api}}/orders/{{orderId}}/status"
+          }
+        },
+        {
+          "name": "Delete order",
+          "request": { "method": "DELETE", "header": [], "url": "{{api}}/orders/{{orderId}}" }
+        },
+        {
+          "name": "Sales summary analytics",
+          "request": { "method": "GET", "header": [], "url": "{{api}}/orders/analytics/sales-summary" }
+        }
+      ]
+    },
+    {
+      "name": "Customers",
+      "item": [
+        {
+          "name": "Customer order history",
+          "request": { "method": "GET", "header": [], "url": "{{api}}/customers/{{customerId}}/order-history" }
+        },
+        {
+          "name": "Unknown customer - 404",
+          "request": { "method": "GET", "header": [], "url": "{{api}}/customers/9999/order-history" }
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,212 @@
+### Lab 3 Homework - Orders & Inventory API sample requests
+### (VS Code REST Client / IntelliJ HTTP Client)
+### Requires: MySQL running + `npm run init-db` + `npm run seed` + `npm start`
+
+@host = http://localhost:3000
+@api = {{host}}/api/v1
+
+### 0. Health check (also verifies the MySQL connection)
+GET {{host}}/health
+
+###############################################################################
+# POST /api/v1/orders  - Create an order (atomic SQL transaction)
+###############################################################################
+
+### 1. Create an order -> 201 Created
+# total_amount is computed from the CURRENT database prices, not from the payload
+POST {{api}}/orders
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "items": [
+    { "productId": 1, "quantity": 1 },
+    { "productId": 2, "quantity": 2 }
+  ]
+}
+
+### 2. Empty items array -> 400
+POST {{api}}/orders
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "items": []
+}
+
+### 3. Quantity is not a positive integer -> 400
+POST {{api}}/orders
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "items": [
+    { "productId": 1, "quantity": 0 }
+  ]
+}
+
+### 4. Negative quantity -> 400
+POST {{api}}/orders
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "items": [
+    { "productId": 1, "quantity": -2 }
+  ]
+}
+
+### 5. Customer does not exist -> 404 Not Found
+POST {{api}}/orders
+Content-Type: application/json
+
+{
+  "customerId": 9999,
+  "items": [
+    { "productId": 1, "quantity": 1 }
+  ]
+}
+
+### 6. Product does not exist -> 404 Not Found
+POST {{api}}/orders
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "items": [
+    { "productId": 8888, "quantity": 1 }
+  ]
+}
+
+### 7. Product out of stock (product 5 = Keychron, stock 0) -> 400
+POST {{api}}/orders
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "items": [
+    { "productId": 5, "quantity": 1 }
+  ]
+}
+
+### 8. Rollback case: valid line + out-of-stock line -> 400
+# Nothing is persisted: stock is NOT deducted and no order row is created
+POST {{api}}/orders
+Content-Type: application/json
+
+{
+  "customerId": 1,
+  "items": [
+    { "productId": 4, "quantity": 1 },
+    { "productId": 5, "quantity": 1 }
+  ]
+}
+
+###############################################################################
+# GET /api/v1/orders  - List + filtering + pagination + JOIN
+###############################################################################
+
+### 9. Default list (page=1, limit=5)
+GET {{api}}/orders
+
+### 10. Filter by status + customerId with pagination
+GET {{api}}/orders?status=pending&customerId=1&page=1&limit=5
+
+### 11. Filter by status only
+GET {{api}}/orders?status=completed
+
+### 12. Unknown status value -> 400
+GET {{api}}/orders?status=refunded
+
+###############################################################################
+# GET /api/v1/orders/:id  - Order details (nested JSON)
+###############################################################################
+
+### 13. Order details
+GET {{api}}/orders/1
+
+### 14. Non-numeric id -> 400
+GET {{api}}/orders/not-a-number
+
+### 15. Unknown id -> 404
+GET {{api}}/orders/999999
+
+###############################################################################
+# PATCH /api/v1/orders/:id/status  - Update status + restore stock
+###############################################################################
+
+### 16. Move to completed (stock unchanged)
+PATCH {{api}}/orders/1/status
+Content-Type: application/json
+
+{
+  "status": "completed"
+}
+
+### 17. Cancel -> stock is restored in the same transaction
+PATCH {{api}}/orders/1/status
+Content-Type: application/json
+
+{
+  "status": "cancelled"
+}
+
+### 18. Cancel again -> 400 (already cancelled)
+PATCH {{api}}/orders/1/status
+Content-Type: application/json
+
+{
+  "status": "cancelled"
+}
+
+### 19. Status outside the ENUM -> 400
+PATCH {{api}}/orders/1/status
+Content-Type: application/json
+
+{
+  "status": "shipped"
+}
+
+### 20. Missing status field -> 400
+PATCH {{api}}/orders/1/status
+Content-Type: application/json
+
+{}
+
+### 21. Unknown order -> 404
+PATCH {{api}}/orders/999999/status
+Content-Type: application/json
+
+{
+  "status": "cancelled"
+}
+
+###############################################################################
+# GET /api/v1/orders/analytics/sales-summary  - SQL aggregation
+###############################################################################
+
+### 22. Sales revenue analytics
+GET {{api}}/orders/analytics/sales-summary
+
+###############################################################################
+# GET /api/v1/customers/:id/order-history  - Customer history
+###############################################################################
+
+### 23. Customer order history + total lifetime spent
+GET {{api}}/customers/1/order-history
+
+### 24. Unknown customer -> 404
+GET {{api}}/customers/999999/order-history
+
+###############################################################################
+# DELETE /api/v1/orders/:id  - Delete (stock restored when not cancelled)
+###############################################################################
+
+### 25. Delete a pending order -> stock restored
+DELETE {{api}}/orders/2
+
+### 26. Delete an already cancelled order -> no double restore
+DELETE {{api}}/orders/3
+
+### 27. Unknown order -> 404
+DELETE {{api}}/orders/999999

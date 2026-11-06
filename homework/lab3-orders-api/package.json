@@ -1,0 +1,31 @@
+{
+  "name": "lab3-orders-api",
+  "version": "1.0.0",
+  "description": "Advanced Orders & Inventory Management API with Node.js, Express.js and MySQL (mysql2/promise) - Web & Database Lab 3 Homework",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "init-db": "node scripts/init-db.js",
+    "init-db:reset": "node scripts/init-db.js --reset",
+    "seed": "node scripts/seed.js",
+    "test": "node tests/smoke-test.js"
+  },
+  "keywords": [
+    "express",
+    "mysql",
+    "mysql2",
+    "transaction",
+    "restful",
+    "swagger",
+    "openapi"
+  ],
+  "author": "Huynh Vu Quoc Huy - 25560070",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mysql2": "^3.11.3",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  }
+}
