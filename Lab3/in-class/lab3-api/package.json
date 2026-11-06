@@ -1,0 +1,25 @@
+{
+  "name": "lab3-api",
+  "version": "1.0.0",
+  "description": "RESTful API with Express Router, Mongoose and Swagger UI - Web & Database Lab 3",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "keywords": [
+    "express",
+    "mongoose",
+    "restful",
+    "swagger",
+    "openapi"
+  ],
+  "author": "Huynh Vu Quoc Huy - 25560070",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.19.2",
+    "mongoose": "^8.5.1",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  }
+}

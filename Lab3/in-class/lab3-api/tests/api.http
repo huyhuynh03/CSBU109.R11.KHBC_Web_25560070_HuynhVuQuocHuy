@@ -1,0 +1,159 @@
+### Lab 3 - RESTful API sample requests (VS Code REST Client / IntelliJ HTTP Client)
+### Requires: MongoDB running + `node server.js`
+
+@host = http://localhost:3000
+@api = {{host}}/api
+
+###############################################################################
+# PRODUCTS
+###############################################################################
+
+### 1. List products (default page=1, limit=5)
+GET {{api}}/products
+
+### 2. List products with filters + pagination
+GET {{api}}/products?category=Electronics&minPrice=1000000&maxPrice=40000000&page=1&limit=5
+
+### 3. Get one product  (replace id with a real _id)
+GET {{api}}/products/PASTE_PRODUCT_ID_HERE
+
+### 4. Create a product  -> 201 Created
+POST {{api}}/products
+Content-Type: application/json
+
+{
+  "name": "Laptop Dell XPS 15",
+  "category": "Electronics",
+  "price": 35000000,
+  "stock": 12,
+  "description": "Laptop gaming"
+}
+
+### 5. Create a product WITHOUT name  -> 400 (ValidationError)
+POST {{api}}/products
+Content-Type: application/json
+
+{
+  "category": "Electronics",
+  "price": 1000000
+}
+
+### 6. Create a product with NEGATIVE price  -> 400 (ValidationError)
+POST {{api}}/products
+Content-Type: application/json
+
+{
+  "name": "Broken product",
+  "category": "Electronics",
+  "price": -5000
+}
+
+### 7. Create a product with UNKNOWN category  -> 400 (enum error)
+POST {{api}}/products
+Content-Type: application/json
+
+{
+  "name": "Broken product",
+  "category": "Food",
+  "price": 5000
+}
+
+### 8. Update a product (PATCH-like: only the fields sent change)
+PUT {{api}}/products/PASTE_PRODUCT_ID_HERE
+Content-Type: application/json
+
+{
+  "stock": 99
+}
+
+### 9. Malformed ObjectId  -> 400 (CastError)
+GET {{api}}/products/not-a-valid-id
+
+### 10. Unknown but valid ObjectId  -> 404
+GET {{api}}/products/64b7f0c2a1b2c3d4e5f60718
+
+### 11. Delete a product
+DELETE {{api}}/products/PASTE_PRODUCT_ID_HERE
+
+###############################################################################
+# CATEGORIES
+###############################################################################
+
+### 12. List categories (pagination + sorting)
+GET {{api}}/categories?page=1&limit=5&sort=name&order=asc
+
+### 13. Get one category
+GET {{api}}/categories/PASTE_CATEGORY_ID_HERE
+
+### 14. Create a category  -> 201, slug auto-generated ("home-living")
+POST {{api}}/categories
+Content-Type: application/json
+
+{
+  "name": "Home & Living",
+  "description": "Furniture, decor and household items"
+}
+
+### 15. Create a category with name shorter than 3 chars  -> 400
+POST {{api}}/categories
+Content-Type: application/json
+
+{
+  "name": "Hi"
+}
+
+### 16. Create an empty category  -> 400
+POST {{api}}/categories
+Content-Type: application/json
+
+{
+  "description": "No name at all"
+}
+
+### 17. Duplicate category name  -> 409 Conflict (error code 11000)
+POST {{api}}/categories
+Content-Type: application/json
+
+{
+  "name": "Home & Living"
+}
+
+### 18. PATCH only the description (slug stays the same)
+PATCH {{api}}/categories/PASTE_CATEGORY_ID_HERE
+Content-Type: application/json
+
+{
+  "description": "Only the description changed"
+}
+
+### 19. PATCH the name  -> slug is regenerated
+PATCH {{api}}/categories/PASTE_CATEGORY_ID_HERE
+Content-Type: application/json
+
+{
+  "name": "Smart Home"
+}
+
+### 20. PATCH with a too-short name  -> 400
+PATCH {{api}}/categories/PASTE_CATEGORY_ID_HERE
+Content-Type: application/json
+
+{
+  "name": "ab"
+}
+
+### 21. Category with malformed id  -> 400
+GET {{api}}/categories/bad-id
+
+### 22. Category with unknown id  -> 404
+GET {{api}}/categories/64b7f0c2a1b2c3d4e5f60718
+
+### 23. Delete a category
+DELETE {{api}}/categories/PASTE_CATEGORY_ID_HERE
+
+###############################################################################
+# SWAGGER
+###############################################################################
+
+### 24. Swagger UI (open in a browser)
+GET {{host}}/api-docs
