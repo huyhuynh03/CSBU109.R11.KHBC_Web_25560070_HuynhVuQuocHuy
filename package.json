@@ -1,0 +1,11 @@
+{
+  "name": "web-backend-lab1",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Lab 1 - Web Backend & Database: Node.js/Express API, MySQL schema + queries, MongoDB documents",
+  "scripts": {
+    "start": "npm --prefix lab1-backend start",
+    "test:api": "node lab1-backend/test-endpoints.js"
+  },
+  "license": "MIT"
+}
