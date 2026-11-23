@@ -1,0 +1,13 @@
+{
+  "name": "ex4-task-api",
+  "version": "1.0.0",
+  "description": "Task Manager API for the DevTools debugging exercise",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}

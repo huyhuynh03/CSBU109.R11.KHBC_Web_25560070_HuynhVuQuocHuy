@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Task Manager</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <main class="app">
+        <header class="app-header">
+            <h1>Task Manager</h1>
+            <p class="subtitle">Lab 4 · Diagnosing API bugs with DevTools</p>
+        </header>
+
+        <section class="stats">
+            <div class="stat">
+                <span class="stat-value" id="statTotal">–</span>
+                <span class="stat-label">Total</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="statActive">–</span>
+                <span class="stat-label">Active</span>
+            </div>
+            <div class="stat">
+                <span class="stat-value" id="statDone">–</span>
+                <span class="stat-label">Done</span>
+            </div>
+        </section>
+
+        <form id="addForm" class="add-form">
+            <input type="text" id="titleInput" placeholder="What needs to be done?" autocomplete="off">
+            <button type="submit" id="addBtn">Add</button>
+        </form>
+
+        <nav class="filters" id="filters">
+            <button type="button" data-status="all" class="active">All</button>
+            <button type="button" data-status="active">Active</button>
+            <button type="button" data-status="done">Done</button>
+        </nav>
+
+        <div id="message" class="message"></div>
+
+        <ul id="taskList" class="task-list"></ul>
+        <p id="emptyState" class="empty-state">Loading...</p>
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
